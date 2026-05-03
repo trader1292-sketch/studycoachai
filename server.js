@@ -13,13 +13,11 @@ const PORT = process.env.PORT || 3001
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || ''
 
 // CORS - allow your Netlify frontend and local development
-// 👇 REPLACE 'your-netlify-app.netlify.app' with YOUR actual Netlify URL
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
   'http://localhost:3000',
-  'https://studycoachai.netlify.app',  // ← CHANGE THIS TO YOUR NETLIFY URL
-  // Add your custom domain if you have one
+  'https://studycoachai.netlify.app',
 ]
 
 app.use(cors({
@@ -192,7 +190,7 @@ app.post('/api/claude', async (req, res) => {
   }
 
   const body = {
-    model: 'claude-3-5-sonnet-20241022',  // Updated to latest stable model
+    model: 'claude-3-sonnet-20240229',
     max_tokens: maxTokens,
     messages: [{ role: 'user', content: prompt }],
   }
@@ -233,7 +231,7 @@ app.post('/api/claude-vision', async (req, res) => {
   }
 
   const body = {
-    model: 'claude-3-5-sonnet-20241022',  // Updated to latest stable model
+    model: 'claude-3-sonnet-20240229',
     max_tokens: 2000,
     messages: [{
       role: 'user',
@@ -244,7 +242,7 @@ app.post('/api/claude-vision', async (req, res) => {
     }]
   }
 
-  const result = await callAnthropic(body, 1) // Only 1 retry for vision (large payload)
+  const result = await callAnthropic(body, 1)
 
   if (result.success) {
     const text = result.data.content.map(c => c.text || '').join('')
@@ -263,6 +261,6 @@ app.post('/api/claude-vision', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`\n✅ Study & Exam Coach server running on port ${PORT}`)
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`)
-  console.log(`   API key: ${ANTHROPIC_API_KEY ? '✓ Set' : '✗ NOT SET - Add ANTHROPIC_API_KEY to environment variables'}`)
+  console.log(`   API key: ${ANTHROPIC_API_KEY ? '✓ Set' : '✗ NOT SET'}`)
   console.log(`   Health check: http://localhost:${PORT}/health\n`)
 })
