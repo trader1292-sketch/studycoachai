@@ -163,131 +163,10 @@ app.get('/', (req, res) => {
   res.json({
     name: 'Study & Exam Coach API',
     version: '1.0.0',
-    endpoints: ['/health', '/api/claude', '/api/claude-vision', '/debug-env', '/debug-test'],
+    endpoints: ['/health', '/api/claude', '/api/claude-vision'],
     status: 'operational'
   })
 })
-
-// ── DEBUG: Check environment ─────────────────────────────────────────────────
-app.get('/debug-env', (req, res) => {
-  res.json({
-    nodeVersion: process.version,
-    platform: process.platform,
-    hasApiKey: !!ANTHROPIC_API_KEY,
-    apiKeyPrefix: ANTHROPIC_API_KEY ? ANTHROPIC_API_KEY.substring(0, 15) : 'none',
-    apiKeyLength: ANTHROPIC_API_KEY ? ANTHROPIC_API_KEY.length : 0,
-    environment: process.env.NODE_ENV,
-    renderEnv: !!process.env.RENDER,
-    port: PORT
-  })
-})
-
-// ── DEBUG: Test Anthropic API directly ───────────────────────────────────────
-app.get('/debug-test', async (req, res) => {
-  const results = {
-    hasApiKey: !!ANTHROPIC_API_KEY,
-    apiKeyLength: ANTHROPIC_API_KEY ? ANTHROPIC_API_KEY.length : 0,
-    tests: []
-  };
-
-  // Test 1: claude-2.1
-  try {
-    const testBody = {
-      model: 'claude-2.1',
-      max_tokens: 20,
-      messages: [{ role: 'user', content: 'Say "OK" if you receive this' }]
-    };
-    
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify(testBody)
-    });
-    
-    const data = await response.json();
-    results.tests.push({
-      model: 'claude-2.1',
-      status: response.status,
-      ok: response.ok,
-      data: data
-    });
-  } catch (err) {
-    results.tests.push({
-      model: 'claude-2.1',
-      error: err.message
-    });
-  }
-
-  // Test 2: claude-instant-1.2
-  try {
-    const testBody = {
-      model: 'claude-instant-1.2',
-      max_tokens: 20,
-      messages: [{ role: 'user', content: 'Say "OK" if you receive this' }]
-    };
-    
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify(testBody)
-    });
-    
-    const data = await response.json();
-    results.tests.push({
-      model: 'claude-instant-1.2',
-      status: response.status,
-      ok: response.ok,
-      data: data
-    });
-  } catch (err) {
-    results.tests.push({
-      model: 'claude-instant-1.2',
-      error: err.message
-    });
-  }
-
-  // Test 3: claude-3-haiku-20240307
-  try {
-    const testBody = {
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 20,
-      messages: [{ role: 'user', content: 'Say "OK" if you receive this' }]
-    };
-    
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify(testBody)
-    });
-    
-    const data = await response.json();
-    results.tests.push({
-      model: 'claude-3-haiku-20240307',
-      status: response.status,
-      ok: response.ok,
-      data: data
-    });
-  } catch (err) {
-    results.tests.push({
-      model: 'claude-3-haiku-20240307',
-      error: err.message
-    });
-  }
-
-  res.json(results);
-});
 
 // ── Main Claude endpoint ──────────────────────────────────────────────────────
 app.post('/api/claude', async (req, res) => {
@@ -311,7 +190,7 @@ app.post('/api/claude', async (req, res) => {
   }
 
   const body = {
-    model: 'claude-2.1',
+    model: 'claude-3-5-sonnet-20241022',
     max_tokens: maxTokens,
     messages: [{ role: 'user', content: prompt }],
   }
@@ -352,7 +231,7 @@ app.post('/api/claude-vision', async (req, res) => {
   }
 
   const body = {
-    model: 'claude-2.1',
+    model: 'claude-3-5-sonnet-20241022',
     max_tokens: 2000,
     messages: [{
       role: 'user',
@@ -384,7 +263,4 @@ app.listen(PORT, () => {
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`)
   console.log(`   API key: ${ANTHROPIC_API_KEY ? '✓ Set' : '✗ NOT SET'}`)
   console.log(`   Health check: http://localhost:${PORT}/health\n`)
-  console.log(`   Debug endpoints:`)
-  console.log(`   - /debug-env - Check environment variables`)
-  console.log(`   - /debug-test - Test Anthropic API with different models`)
 })
