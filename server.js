@@ -190,7 +190,7 @@ app.post('/api/claude', async (req, res) => {
   }
 
   const body = {
-    model: 'claude-3-sonnet-20240229',
+    model: 'claude-2.1',
     max_tokens: maxTokens,
     messages: [{ role: 'user', content: prompt }],
   }
@@ -231,7 +231,7 @@ app.post('/api/claude-vision', async (req, res) => {
   }
 
   const body = {
-    model: 'claude-3-sonnet-20240229',
+    model: 'claude-2.1',
     max_tokens: 2000,
     messages: [{
       role: 'user',
